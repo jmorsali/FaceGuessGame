@@ -35,7 +35,7 @@
 
         $("#btnStartGame").click(function () {
 
-            setupPicture();
+            getPictureAPI();
 
         });
 
@@ -44,35 +44,35 @@
     function getPictureAPI() {
         $.ajax({
             url: '/Home/getPicInfo',
-            method:'post',
-            success: function(data) {
-               console.log(data);
+            method: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: {},
+            success: function (data) {
+                console.log(data);
+                setupPicture(data);
             },
-            error: function (req, status, errorObj)  {
+            error: function (req, status, errorObj) {
                 console.log(errorObj);
+                
             }
 
         });
-
-
-        let obj = {};
-        obj["pictureAddrress"] = "/Content/Img/2.png";
-        return obj;
+        
+        
     }
 
-    function setupPicture() {
+    function setupPicture(picInfo) {
         $('img[id^="draggable_"]').remove();
-
-        var picInfo = getPictureAPI();
-
+        
         var picCounter = Math.floor(Math.random() * 1000) + 1;
 
         $('#gameImageContainer').prepend('<img id="draggable_' + picCounter + '" />');
-
-        $("#draggable_" + picCounter).attr("src", picInfo.pictureAddrress);
+        console.log("!***"+picInfo);
+        $("#draggable_" + picCounter).attr("src", picInfo.PictureAddress);
         $("#draggable_" + picCounter).draggable({ stop: dragStop, revert: true });
         $("#draggable" + picCounter).css({ display: 'inline' });
-        
+
         move($("#draggable_" + picCounter));
 
     }
@@ -109,7 +109,7 @@
 
         $(this).draggable('disable');
         $(this).fadeToggle('slow');
-        
+
     }
 </script>
 

@@ -2,7 +2,7 @@
 {
     public  class PictureDto
     {
-        public string PicctureAddress { get; set; }
+        public string PictureAddress { get; set; }
         public int id { get; set; }
     }
 }

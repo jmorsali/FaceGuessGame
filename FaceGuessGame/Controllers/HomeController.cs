@@ -13,6 +13,7 @@ namespace FaceGuessGame.Controllers
         }
         public ActionResult Index()
         {
+            _pictureManager.ResetPictureManager();
             return View();
         }
 
