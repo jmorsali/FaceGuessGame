@@ -1,0 +1,159 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+
+<style>
+    #draggable {
+        width: 100px;
+        height: 100px;
+        padding: 0.5em;
+        float: none;
+        margin: 10px 10px 10px 0;
+    }
+
+    #droppable {
+        width: 150px;
+        height: 150px;
+        padding: 0.5em;
+        float: left;
+        margin: 10px;
+    }
+</style>
+
+
+<script>
+
+
+    $(function () {
+
+        $("#droppable1").droppable({ drop: drop });
+        $("#droppable2").droppable({ drop: drop });
+        $("#droppable3").droppable({ drop: drop });
+        $("#droppable4").droppable({ drop: drop });
+
+        $("#btnStartGame").click(function () {
+
+            setupPicture();
+
+        });
+
+    });
+
+    function getPictureAPI() {
+        $.ajax({
+            url: '/Home/getPicInfo',
+            method:'post',
+            success: function(data) {
+               console.log(data);
+            },
+            error: function (req, status, errorObj)  {
+                console.log(errorObj);
+            }
+
+        });
+
+
+        let obj = {};
+        obj["pictureAddrress"] = "/Content/Img/2.png";
+        return obj;
+    }
+
+    function setupPicture() {
+        $('img[id^="draggable_"]').remove();
+
+        var picInfo = getPictureAPI();
+
+        var picCounter = Math.floor(Math.random() * 1000) + 1;
+
+        $('#gameImageContainer').prepend('<img id="draggable_' + picCounter + '" />');
+
+        $("#draggable_" + picCounter).attr("src", picInfo.pictureAddrress);
+        $("#draggable_" + picCounter).draggable({ stop: dragStop, revert: true });
+        $("#draggable" + picCounter).css({ display: 'inline' });
+        
+        move($("#draggable_" + picCounter));
+
+    }
+
+    function drop(event, ui) {
+
+        $(this)
+            .addClass("ui-state-highlight")
+            .find("p")
+            .html("Dropped!");
+
+        var draggable = $('img[id^="draggable_"]');
+        draggable.draggable('disable');
+        draggable.stop(true, true);
+    }
+
+    function dragStop(event, ui) {
+        console.log($(this));
+    }
+
+    function move(movingItem) {
+
+        //var movingItem = $("#draggable");
+        var gameContainerFooter = $("#gameContainerFooter");
+
+        var diff = (gameContainerFooter.position().top - gameContainerFooter.outerHeight(true)) - movingItem.position().top;
+        movingItem.animate({ bottom: `-=${diff}px` }, 3000, 'linear', moveFinished);
+        //console.log(gameContainerFooter.position().top - gameContainerFooter.outerHeight(true));
+        //console.log(movingItem.position().top);
+
+    }
+
+    function moveFinished() {
+
+        $(this).draggable('disable');
+        $(this).fadeToggle('slow');
+        
+    }
+</script>
+
+
+<div id="gameContainer" class="container h-100">
+    <div id="gameContainerHeader" class="row">
+        <div id="droppable1" class="col h-25">
+            Japanese
+        </div>
+        <div id="gameImageContainer" class="col-10 text-center justify-content-center">
+
+        </div>
+        <div id="droppable2" class="col">
+            Chinese
+        </div>
+    </div>
+
+
+    <div class="row ">
+        <div class="col-12" style="max-height:800px">
+
+            <br />
+            <br /> <br /> <br /> <br /> <br />
+            <button id="btnStartGame">Start Game</button>
+            <br />
+            <br /> <br /> <br /> <br /> <br />
+
+        </div>
+    </div>
+
+
+    <div id="gameContainerFooter" class="row">
+        <div id="droppable3" class="col">
+            Korean
+        </div>
+        <div class="col-10">
+
+        </div>
+        <div id="droppable4" class="col">
+            Thai
+        </div>
+    </div>
+
+
+</div>
+
+
