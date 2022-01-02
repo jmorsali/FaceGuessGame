@@ -56,7 +56,7 @@ namespace FaceGuessGame
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-            kernel.Bind<IPictureManger>().To<PictureManger>();
+            kernel.Bind<IQuestionManger>().To<QuestionManger>();
 
         }        
     }
