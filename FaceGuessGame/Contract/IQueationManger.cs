@@ -6,7 +6,7 @@ namespace FaceGuessGame.Contract
     public interface IQuestionManger
     {
         QuestionDto GetNextQuestion();
-        List<int> ResetQuestionManager();
+        List<QuestionDto> ResetQuestionManager();
         UserScoreDto SaveUserAnswer(int QuestionId, Answers? UserAnswer);
     }
 }

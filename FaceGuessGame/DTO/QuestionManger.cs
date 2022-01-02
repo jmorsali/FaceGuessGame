@@ -26,28 +26,29 @@ namespace FaceGuessGame.DTO
 
         }
 
-        public List<int> ResetQuestionManager()
+        public List<QuestionDto> ResetQuestionManager()
         {
-             HttpContext.Current.Session["ViewedPictures"] = new List<int>();
-             return (List<int>)HttpContext.Current.Session["ViewedPictures"];
+            HttpContext.Current.Session["AnswerdQuestions"] = new List<QuestionDto>();
+            return (List<QuestionDto>)HttpContext.Current.Session["AnswerdQuestions"];
         }
 
         public QuestionDto GetNextQuestion()
         {
-            var showedQuestions = (List<int>)HttpContext.Current.Session["ViewedPictures"];
-            if (showedQuestions == null)
-                showedQuestions= ResetQuestionManager();
+            var answerdQuestions = (List<QuestionDto>)HttpContext.Current.Session["AnswerdQuestions"] ??
+                                   ResetQuestionManager();
 
-            var pic = availableQuestions.FirstOrDefault(x => showedQuestions!showedQuestions.Contains(x.Id));
-            if (pic != null)
-                showedQuestions.Add(pic.Id);
-
-            return pic;
+            var question = availableQuestions.FirstOrDefault(q => !answerdQuestions.Select(x => x.Id).Contains(q.Id));
+            if (question != null)
+                answerdQuestions.Add(question);
+            return question;
         }
 
         public UserScoreDto SaveUserAnswer(int QuestionId, Answers? UserAnswer)
         {
-            var question = availableQuestions.FirstOrDefault(q => q.Id == QuestionId);
+            var answerdQuestions = (List<QuestionDto>)HttpContext.Current.Session["AnswerdQuestions"] ??
+                                                    ResetQuestionManager();
+
+            var question = answerdQuestions.FirstOrDefault(q => q.Id == QuestionId);
             if (question != null)
             {
                 if (UserAnswer.HasValue)
@@ -55,12 +56,11 @@ namespace FaceGuessGame.DTO
                 else
                     question.AnsweredCorrectly = false;
             }
+            
+            var positiveScore = answerdQuestions.Count(q => q.AnsweredCorrectly) * 25;
+            var negativeScore = answerdQuestions.Count(q => !q.AnsweredCorrectly) * 5;
 
-            var showedQuestions = (List<int>)HttpContext.Current.Session["ViewedPictures"];
-            var positiveScore = availableQuestions.Count(q => showedQuestions.Contains(q.Id) && q.AnsweredCorrectly) * 25;
-            var negativeScore = availableQuestions.Count(q => showedQuestions.Contains(q.Id) && !q.AnsweredCorrectly) * 5;
-
-            return new UserScoreDto { PositiveScore= positiveScore ,  NegativeScore= negativeScore};
+            return new UserScoreDto { PositiveScore = positiveScore, NegativeScore = negativeScore };
         }
     }
 }
